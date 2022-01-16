@@ -1,0 +1,115 @@
+html {
+    font-size: 10px;
+}
+body {
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+#form {
+    background-color: rgba(11, 82, 91, 0.6);
+    padding: 2rem 4rem;
+    width: 70%;
+}
+.overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+}
+.step {
+    font-size: 1.9rem;
+}
+.radio-label {
+    font-size: 1.8rem;
+    color: white;
+}
+.radio {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+.use-filled-data,
+.step,
+h2,
+h3 {
+    color: white;
+}
+.bg-video,
+.bg {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+input,
+select {
+    margin: 0.6rem 0;
+    outline-color: #caf0f8;
+    outline-width: 2px;
+}
+select,
+.standard-input {
+    padding: 1rem;
+    width: 100%;
+    font-size: 1.6rem;
+    border: 2px solid #caf0f8;
+}
+
+.invalid {
+    border: 3px solid rgba(255, 99, 71, 0.9);
+}
+.valid {
+    border: 4px solid lightgreen;
+}
+
+.tab {
+    display: none;
+}
+
+.card-container {
+    position: relative;
+}
+
+.card-logo {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn {
+    padding: 1rem 3rem;
+    border: none;
+    cursor: pointer;
+    color: white;
+    outline-color: #caf0f8;
+    outline-width: 2px;
+}
+.buttons {
+    margin-top: 2rem;
+}
+.radio-container {
+    margin-top: 0.8rem;
+}
+
+.btn:first-child {
+    margin-right: 1rem;
+}
+
+.next {
+    background-color: #023e8a;
+}
+
+.prev {
+    background-color: #0096c7;
+}
