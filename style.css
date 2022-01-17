@@ -47,7 +47,7 @@ h3 {
     left: 0;
 }
 .overlay {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.2);
     z-index: 1;
     width: 100vw;
     height: 100vh;
