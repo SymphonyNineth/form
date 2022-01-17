@@ -13,7 +13,7 @@ function updateShippingFields(source, target) {
     const sourceEl = document.querySelector(source);
     targetEl.value = sourceEl.value;
     if (!sourceEl.classList.contains("invld")) {
-        targetEl.classList.remove("invld");
+        targetEl.classList.remove("invld", "invalid");
     }
 }
 
@@ -44,7 +44,7 @@ function setUpdater(source, target, event = "input") {
         if (!checkBox.checked) return;
         targetEl.value = e.target.value;
         if (!sourceEl.classList.contains("invld")) {
-            targetEl.classList.remove("invld");
+            targetEl.classList.remove("invld", "invalid");
         }
     });
 }
