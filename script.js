@@ -34,24 +34,6 @@ function updateButtons(currentTab, last) {
     }
 }
 
-function setUpdater(source, target, event = "input") {
-    target ??= `#shipping${source[1].toUpperCase() + source.slice(2)}`;
-
-    const sourceEl = document.querySelector(source);
-    const targetEl = document.querySelector(target);
-    sourceEl.addEventListener(event, e => {
-        const checkBox = document.querySelector("#useFilledData");
-        if (!checkBox.checked) return;
-        targetEl.value = e.target.value;
-        if (!sourceEl.classList.contains("invld")) {
-            targetEl.classList.remove("invld", "invalid");
-        }
-    });
-}
-["#city", "#address", "#postCode", "#country"].forEach(selector =>
-    setUpdater(selector)
-);
-
 function updateStepIndicator(currentTab, total) {
     const stepContainer = document.querySelector("div#step");
     const currentStep = document.querySelector("span#current");
@@ -199,7 +181,6 @@ function validateStandardFields() {
     fields.forEach(field =>
         field.addEventListener("change", e => {
             updateField(validateStandard(e.target.value), e.target);
-            console.log(field.value.length);
         })
     );
 }
@@ -211,6 +192,29 @@ function validateEmail(email) {
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         );
 }
+
+const city = document.querySelector("#city");
+city.addEventListener("focusout", e => {
+    const shippingField = document.querySelector("#shippingCity");
+    if (!e.target.classList.contains("invld")) {
+        shippingField.classList.remove("invld", "invalid");
+    }
+});
+const postCode = document.querySelector("#postCode");
+postCode.addEventListener("focusout", e => {
+    const shippingField = document.querySelector("#shippingPostCode");
+    if (!e.target.classList.contains("invld")) {
+        shippingField.classList.remove("invld", "invalid");
+    }
+});
+
+const address = document.querySelector("#address");
+address.addEventListener("focusout", e => {
+    const shippingField = document.querySelector("#shippingAddress");
+    if (!e.target.classList.contains("invld")) {
+        shippingField.classList.remove("invld", "invalid");
+    }
+});
 
 function validatePasswordField() {
     const passwordField = document.querySelector("#password");
@@ -242,7 +246,9 @@ function validateField(validate, selector, event = "change") {
 
 function validateCountry(countrySelector, postCodeSelector) {
     const field = document.querySelector(countrySelector);
+    const shippingField = document.querySelector("#shippingCountry");
     const postCodeField = document.querySelector(postCodeSelector);
+    const shippingPostCode = document.querySelector("#shippingPostCode");
     field.addEventListener("change", e => {
         updateField(e.target.value, field);
     });
@@ -252,6 +258,12 @@ function validateCountry(countrySelector, postCodeSelector) {
             validatePostCode(postCodeField.value, countrySelector),
             postCodeField
         );
+        if (!field.classList.contains("invld")) {
+            shippingField.classList.remove("invld", "invalid");
+            if (!postCode.classList.contains("invld")) {
+                shippingPostCode.classList.remove("invld", "invalid");
+            }
+        }
     });
 }
 
@@ -332,7 +344,26 @@ function isComplete(tabNumber) {
     }
     return allComplete;
 }
+function setUpdater(source, target, event = "input") {
+    target ??= `#shipping${source[1].toUpperCase() + source.slice(2)}`;
+
+    const sourceEl = document.querySelector(source);
+    const targetEl = document.querySelector(target);
+    sourceEl.addEventListener(event, e => {
+        const checkBox = document.querySelector("#useFilledData");
+        if (!checkBox.checked) return;
+        targetEl.value = e.target.value;
+        if (!sourceEl.classList.contains("invld")) {
+            targetEl.classList.remove("invld", "invalid");
+        }
+    });
+}
+
 handleShippingChange();
 displayTab(currentTab, tabs.length - 1);
 handleButtonClicks();
 updateStepIndicator(currentTab, tabs.length - 1);
+
+["#city", "#address", "#postCode", "#country"].forEach(selector =>
+    setUpdater(selector)
+);
