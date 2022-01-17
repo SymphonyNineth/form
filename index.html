@@ -317,9 +317,9 @@
             <input class="standard-input invld" id="postCode" placeholder="Postal Code..." />
             <input id="useFilledData" type="checkbox" />
             <label class="use-filled-data" for="useFilledData">Use filled data for shipping</label>
-            <div id="shippingFields" style="display: none;">
-                <select class="standard-input" disabled id="shippingCountry" name="country">
-                    <option value="" disabled selected>
+            <div id="shippingFields">
+                <select class="invld standard-input" id="shippingCountry" name="country">
+                    <option value="" selected>
                         Select your country
                     </option>
                     <option value="Afganistan">Afghanistan</option>
@@ -605,9 +605,9 @@
                     <option value="Zambia">Zambia</option>
                     <option value="Zimbabwe">Zimbabwe</option>
                 </select>
-                <input class="standard-input" disabled id="shippingCity" placeholder="City..." />
-                <input class="standard-input" disabled id="shippingAddress" placeholder="Address..." />
-                <input class="standard-input" disabled id="shippingPostCode" placeholder="Postal Code..." />
+                <input class="invld standard standard-input" id="shippingCity" placeholder="City..." />
+                <input class="invld standard standard-input" id="shippingAddress" placeholder="Address..." />
+                <input class="invld standard-input" id="shippingPostCode" placeholder="Postal Code..." />
             </div>
         </div>
 

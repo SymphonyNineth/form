@@ -7,6 +7,16 @@ function defineStyle(selector, property, value) {
     el.style[property] = value;
 }
 
+function updateShippingFields(source, target) {
+    target ??= `#shipping${source[1].toUpperCase() + source.slice(2)}`;
+    const targetEl = document.querySelector(target);
+    const sourceEl = document.querySelector(source);
+    targetEl.value = sourceEl.value;
+    if (!sourceEl.classList.contains("invld")) {
+        targetEl.classList.remove("invld");
+    }
+}
+
 function updateButtons(currentTab, last) {
     if (currentTab == 0) {
         defineStyle("#prevBtn", "display", "none");
@@ -24,22 +34,23 @@ function updateButtons(currentTab, last) {
     }
 }
 
-function updateOnInput(source, target, event = "input") {
+function setUpdater(source, target, event = "input") {
     target ??= `#shipping${source[1].toUpperCase() + source.slice(2)}`;
 
     const sourceEl = document.querySelector(source);
     const targetEl = document.querySelector(target);
     sourceEl.addEventListener(event, e => {
+        const checkBox = document.querySelector("#useFilledData");
+        if (!checkBox.checked) return;
         targetEl.value = e.target.value;
+        if (!sourceEl.classList.contains("invld")) {
+            targetEl.classList.remove("invld");
+        }
     });
 }
-
-function updateShippingFields() {
-    ["#city", "#address", "#postCode", "#country"].forEach(selector =>
-        updateOnInput(selector)
-    );
-}
-updateShippingFields();
+["#city", "#address", "#postCode", "#country"].forEach(selector =>
+    setUpdater(selector)
+);
 
 function updateStepIndicator(currentTab, total) {
     const stepContainer = document.querySelector("div#step");
@@ -125,15 +136,30 @@ function validateCard() {
 
 validateCard();
 
-function handleShippingChange() {
-    const checkBox = document.querySelector("#useFilledData");
-    checkBox.addEventListener("input", e => {
-        if (e.target.checked) {
-            defineStyle("#shippingFields", "display", "block");
-        } else {
-            defineStyle("#shippingFields", "display", "none");
+const checkBox = document.querySelector("#useFilledData");
+function validateShipping(isDisabled) {
+    const fields = document.querySelector("#shippingFields").children;
+    for (let field of fields) {
+        if (isDisabled) {
+            updateField(true, field);
         }
-    });
+    }
+}
+checkBox.addEventListener("input", e => {
+    handleShippingChange(e.target.checked);
+    // validateShipping(e.target.checked);
+});
+
+function handleShippingChange(isDisabled) {
+    const fields = Array.from(
+        document.querySelector("#shippingFields").children
+    );
+    if (isDisabled) {
+        ["#city", "#address", "#postCode", "#country"].forEach(selector =>
+            updateShippingFields(selector)
+        );
+    }
+    fields.forEach(field => (field.disabled = isDisabled));
 }
 function handleCreditCardInput(selector) {
     const cardField = document.querySelector(selector);
@@ -162,10 +188,6 @@ function updateField(isValid, el) {
     }
 }
 
-function makrIncomplete(field) {
-    field.classList.add("invalid");
-}
-
 function validateStandardFields() {
     function validateStandard(string) {
         if (string.length > 0) {
@@ -177,6 +199,7 @@ function validateStandardFields() {
     fields.forEach(field =>
         field.addEventListener("change", e => {
             updateField(validateStandard(e.target.value), e.target);
+            console.log(field.value.length);
         })
     );
 }
@@ -217,22 +240,25 @@ function validateField(validate, selector, event = "change") {
     });
 }
 
-function validateCountry() {
-    const field = document.querySelector("#country");
-    const postCodeField = document.querySelector("#postCode");
+function validateCountry(countrySelector, postCodeSelector) {
+    const field = document.querySelector(countrySelector);
+    const postCodeField = document.querySelector(postCodeSelector);
     field.addEventListener("change", e => {
         updateField(e.target.value, field);
     });
 
     field.addEventListener("change", () => {
-        updateField(validatePostCode(postCodeField.value), postCodeField);
+        updateField(
+            validatePostCode(postCodeField.value, countrySelector),
+            postCodeField
+        );
     });
 }
 
-validateCountry();
-
-function validatePostCode(value) {
-    const selectedCountry = document.querySelector("#country").value;
+validateCountry("#country", "#postCode");
+validateCountry("#shippingCountry", "#shippingPostCode");
+function validatePostCode(value, forCountry) {
+    const selectedCountry = document.querySelector(forCountry).value;
     if (!selectedCountry) return false;
     const codeRegEx = codes.find(
         ({ Country }) => Country === selectedCountry
@@ -242,11 +268,25 @@ function validatePostCode(value) {
     } else {
         return value.match(codeRegEx);
     }
+    return false;
 }
 
-validateField(validatePostCode, "#postCode");
+validateField(
+    value => validatePostCode(value, "#country"),
+    "#postCode",
+    "change"
+);
+validateField(
+    value => validatePostCode(value, "#shippingCountry"),
+    "#shippingPostCode",
+    "change"
+);
 
-validateField(timestamp => Date.parse(timestamp) > Date.now(), "#expDate");
+validateField(
+    timestamp => Date.parse(timestamp) > Date.now(),
+    "#expDate",
+    "change"
+);
 
 validateField(
     value => value.length > 0 && value.length < 100,
@@ -264,7 +304,7 @@ function limitInputChars(selector, max_length) {
 limitInputChars("#ownersName", 100);
 limitInputChars("#cvc", 4);
 
-validateField(validateEmail, "#email");
+validateField(validateEmail, "#email", "change");
 
 validateEmail();
 
@@ -273,6 +313,9 @@ validateStandardFields();
 handleCreditCardInput("#creditCard");
 
 function isComplete(tabNumber) {
+    function markIncomplete(field) {
+        field.classList.add("invalid");
+    }
     const tab = document.querySelectorAll(".tab")[tabNumber];
     const fields = [
         ...tab.querySelectorAll("input"),
@@ -284,7 +327,7 @@ function isComplete(tabNumber) {
     for (let field of fields) {
         if (field.classList.contains("invld")) {
             allComplete = false;
-            makrIncomplete(field);
+            markIncomplete(field);
         }
     }
     return allComplete;
